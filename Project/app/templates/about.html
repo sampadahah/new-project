@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h2 class="fw-bold mb-3">About the Project</h2>
+
+  <p class="text-muted">
+    The Student Attendance Management System is a web-based application developed
+    to replace traditional manual attendance processes with a digital solution.
+    The system ensures accuracy, transparency, and easy access to attendance data
+    for both administrators and students.
+  </p>
+</div>
+
+<div class="row g-4">
+
+  <!-- Project Workflow -->
+  <div class="col-md-6">
+    <div class="glass-card h-100">
+      <h5 class="fw-semibold mb-3">Project Workflow</h5>
+      <ol class="text-muted small">
+        <li>Students register and log in to the system</li>
+        <li>Admin creates and manages student profiles</li>
+        <li>Admin marks daily attendance</li>
+        <li>Students view attendance history and summaries</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- User Roles -->
+  <div class="col-md-6">
+    <div class="glass-card h-100">
+      <h5 class="fw-semibold mb-3">User Roles</h5>
+      <p class="text-muted small mb-2">
+        The system supports role-based access to ensure data security and proper
+        functionality.
+      </p>
+      <ul class="text-muted small">
+        <li><strong>Admin:</strong> Manages students and attendance records</li>
+        <li><strong>User:</strong> Views personal attendance data</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<hr class="my-5">
+
+<div class="glass-card">
+  <h5 class="fw-semibold mb-3">Objectives</h5>
+  <ul class="text-muted small">
+    <li>Reduce manual attendance errors</li>
+    <li>Improve efficiency in attendance tracking</li>
+    <li>Provide transparent access to attendance records</li>
+    <li>Ensure secure, role-based system access</li>
+  </ul>
+</div>
+{% endblock %}
