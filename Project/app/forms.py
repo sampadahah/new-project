@@ -22,3 +22,5 @@ class LoginForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
         for f in self.fields.values():
             f.widget.attrs["class"] = "form-control"
+
+ 
