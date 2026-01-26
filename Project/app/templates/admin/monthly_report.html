@@ -1,0 +1,54 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Monthly Attendance Report{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10">
+
+    <div class="cardx mb-4">
+      <h3 class="fw-bold mb-3">Monthly Attendance Report</h3>
+
+      <form method="get" class="row g-3">
+        <div class="col-md-3">{{ form.program }}</div>
+        <div class="col-md-3">{{ form.batch }}</div>
+        <div class="col-md-3">{{ form.month }}</div>
+        <div class="col-md-3">{{ form.year }}</div>
+
+        <div class="col-12">
+          <button type="submit" class="btn btn-dark px-4" style="border-radius:12px;">
+            View Report
+          </button>
+        </div>
+      </form>
+    </div>
+
+    {% if meta %}
+    <div class="cardx">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Total</th>
+            <th>Present</th>
+            <th>Absent</th>
+            <th>%</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in table %}
+          <tr>
+            <td>{{ r.student.full_name }}</td>
+            <td>{{ r.total }}</td>
+            <td>{{ r.present }}</td>
+            <td>{{ r.absent }}</td>
+            <td>{{ r.percent }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

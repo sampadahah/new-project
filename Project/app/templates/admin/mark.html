@@ -1,0 +1,74 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10">
+
+    <div class="cardx mb-4">
+      <h3 class="fw-bold mb-3">Mark Attendance</h3>
+
+      <form method="get" class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Date</label>
+          {{ form.date }}
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Program</label>
+          {{ form.program }}
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Batch</label>
+          {{ form.batch }}
+        </div>
+
+        <div class="col-12">
+          <button type="submit" class="btn btn-dark px-4" style="border-radius:12px;">
+            Load Students
+          </button>
+        </div>
+      </form>
+    </div>
+
+    {% if rows %}
+    <div class="cardx">
+      <h5 class="fw-semibold mb-3">
+        {{ program }} – {{ batch }} | {{ att_date }}
+      </h5>
+
+      <form method="post">
+        {% csrf_token %}
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Present</th>
+              <th>Student ID</th>
+              <th>Student Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in rows %}
+            <tr>
+              <td>
+                <input type="checkbox" name="present" value="{{ r.student.id }}"
+                       {% if r.is_present %}checked{% endif %}>
+              </td>
+              <td>{{ r.student.student_id }}</td>
+              <td>{{ r.student.full_name }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-success px-4" style="border-radius:12px;">
+          Save Attendance
+        </button>
+      </form>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

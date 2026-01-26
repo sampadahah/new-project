@@ -1,0 +1,72 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Daily Attendance Report{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10">
+
+    <div class="cardx mb-4">
+      <h3 class="fw-bold mb-3">Daily Attendance Report</h3>
+
+      <form method="get" class="row g-3">
+        <div class="col-md-4">{{ form.date }}</div>
+        <div class="col-md-4">{{ form.program }}</div>
+        <div class="col-md-4">{{ form.batch }}</div>
+
+        <div class="col-12">
+          <button type="submit" class="btn btn-dark px-4" style="border-radius:12px;">
+            View Report
+          </button>
+        </div>
+      </form>
+    </div>
+
+    {% if summary %}
+    <div class="cardx mb-4">
+      <p class="mb-1"><strong>Program:</strong> {{ summary.program }}</p>
+      <p class="mb-1"><strong>Batch:</strong> {{ summary.batch }}</p>
+      <p class="mb-3"><strong>Date:</strong> {{ summary.date }}</p>
+
+      <div class="row text-center mb-3">
+        <div class="col">Total<br><strong>{{ summary.total }}</strong></div>
+        <div class="col">Present<br><strong>{{ summary.present }}</strong></div>
+        <div class="col">Absent<br><strong>{{ summary.absent }}</strong></div>
+        <div class="col">%</br><strong>{{ summary.percent }}%</strong></div>
+      </div>
+
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Status</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.student.full_name }}</td>
+            <td>
+              {% if r.is_present %}
+                <span class="badge bg-success">Present</span>
+              {% else %}
+                <span class="badge bg-danger">Absent</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if r.record %}
+              <a href="{% url 'attendance_edit' r.record.id %}" class="btn btn-sm btn-outline-primary">
+                Edit
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

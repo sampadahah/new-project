@@ -1,28 +1,61 @@
 {% extends "base.html" %}
-
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
+<div class="text-center mb-5">
+  <h1 class="fw-bold display-5 mb-3">
+    Student Attendance Management System
+  </h1>
 
-      <div class="card shadow-sm border-0 mt-5">
-        <div class="card-body text-center">
-          <h3 class="fw-bold mb-2">
-            Welcome, {{ user.username }} 👋
-          </h3>
+  <p class="lead text-muted mx-auto" style="max-width:720px;">
+    A digital platform designed to simplify attendance tracking, improve accuracy,
+    and provide transparent access to attendance records for both administrators
+    and students.
+  </p>
+</div>
 
-          <p class="text-muted mb-4">
-            You are logged in successfully.
-          </p>
-          <a href="{% url 'logout' %}" class="btn btn-outline-danger">
-            Logout
-          </a>
-        </div>
-      </div>
+<div class="row g-4 text-center">
 
+  <!-- Admin Card -->
+  <div class="col-md-6">
+    <div class="glass-card h-100">
+      <h4 class="fw-semibold mb-3">Admin Panel</h4>
+      <p class="text-muted mb-3">
+        Administrators manage student profiles and record daily attendance
+        efficiently using a centralized system.
+      </p>
+      <ul class="text-muted text-start small">
+        <li>Add, update, and delete student records</li>
+        <li>Mark and update daily attendance</li>
+        <li>View attendance reports</li>
+      </ul>
     </div>
   </div>
+
+  <!-- Student Card -->
+  <div class="col-md-6">
+    <div class="glass-card h-100">
+      <h4 class="fw-semibold mb-3">Student Access</h4>
+      <p class="text-muted mb-3">
+        Students can securely log in and monitor their attendance records
+        without manual paperwork.
+      </p>
+      <ul class="text-muted text-start small">
+        <li>View personal attendance history</li>
+        <li>Check monthly attendance summary</li>
+        <li>Access records anytime</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<hr class="my-5">
+
+<div class="text-center">
+  <p class="text-muted">
+    This system improves efficiency, reduces errors, and ensures reliable
+    attendance management in academic institutions.
+  </p>
 </div>
 {% endblock %}
