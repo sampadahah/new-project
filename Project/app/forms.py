@@ -82,9 +82,9 @@ class ProfileForm(forms.ModelForm):
         return cleaned_data
 
 class AttendanceMarkForm(forms.Form):
-    date = forms.DateField(initial=timezone.localdate, widget=forms.DateInput(attrs={"type": "date"}))
-    program = forms.ChoiceField(choices=[], required=True)
-    batch = forms.ChoiceField(choices=[], required=True)
+    date = forms.DateField(initial=timezone.localdate, widget=forms.DateInput(attrs={"type": "date", "class": "form-control"}))
+    program = forms.ChoiceField(choices=[], required=True, widget=forms.Select(attrs={"class":"form-select"}))
+    batch = forms.ChoiceField(choices=[], required=True, widget=forms.Select(attrs={"class":"form-select"}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -95,11 +95,11 @@ class AttendanceMarkForm(forms.Form):
         self.fields["program"].choices = [(p, p) for p in programs]
         self.fields["batch"].choices = [(b, b) for b in batches]
 
-class AttendanceMonthForm(forms.Form):
-    program = forms.ChoiceField(choices=[], required=True)
-    batch = forms.ChoiceField(choices=[], required=True)
-    month = forms.ChoiceField(choices=[], required=True)
-    year = forms.IntegerField(min_value=2000, max_value=2100, initial=timezone.localdate().year)
+
+
+class ReportBaseForm(forms.Form):
+    program = forms.ChoiceField(choices=[], required=True, widget=forms.Select(attrs={"class":"form-select"}))
+    batch = forms.ChoiceField(choices=[], required=True, widget=forms.Select(attrs={"class":"form-select"}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -109,6 +109,23 @@ class AttendanceMonthForm(forms.Form):
 
         self.fields["program"].choices = [(p, p) for p in programs]
         self.fields["batch"].choices = [(b, b) for b in batches]
-        self.fields["month"].choices = [
-            (i, calendar.month_name[i]) for i in range(1, 13)
-        ]
+
+
+class DailyReportForm(ReportBaseForm):
+    date = forms.DateField(
+        initial=timezone.localdate,
+        widget=forms.DateInput(attrs={"type": "date", "class": "form-control"})
+    )
+
+
+class MonthlyReportForm(ReportBaseForm):
+    month = forms.ChoiceField(choices=[], required=True, widget=forms.Select(attrs={"class":"form-select"}))
+    year = forms.IntegerField(
+        min_value=2000, max_value=2100,
+        initial=timezone.localdate().year,
+        widget=forms.NumberInput(attrs={"class": "form-control"})
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["month"].choices = [(i, calendar.month_name[i]) for i in range(1, 13)]

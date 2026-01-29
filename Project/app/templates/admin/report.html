@@ -1,0 +1,129 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Attendance Reports{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-12">
+
+    <div class="cardx mb-4">
+      <h3 class="fw-bold mb-3">Attendance Reports</h3>
+
+      <!-- Tabs -->
+      <div class="d-flex gap-2 mb-3">
+        <a href="?type=daily"
+           class="btn {% if report_type == 'daily' %}btn-dark{% else %}btn-outline-dark{% endif %}"
+           style="border-radius:12px;">
+          Daily Report
+        </a>
+        <a href="?type=monthly"
+           class="btn {% if report_type == 'monthly' %}btn-dark{% else %}btn-outline-dark{% endif %}"
+           style="border-radius:12px;">
+          Monthly Report
+        </a>
+      </div>
+
+      {% if report_type == 'daily' %}
+      <!-- Daily filter -->
+      <form method="get" class="row g-3">
+        <input type="hidden" name="type" value="daily">
+        <div class="col-md-4">
+          <label class="form-label">Date</label>
+          {{ daily_form.date }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Program</label>
+          {{ daily_form.program }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Batch</label>
+          {{ daily_form.batch }}
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-dark px-4" style="border-radius:12px;">View</button>
+        </div>
+      </form>
+      {% else %}
+      <!-- Monthly filter -->
+      <form method="get" class="row g-3">
+        <input type="hidden" name="type" value="monthly">
+        <div class="col-md-4">
+          <label class="form-label">Program</label>
+          {{ monthly_form.program }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Batch</label>
+          {{ monthly_form.batch }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Month</label>
+          {{ monthly_form.month }}
+        </div>
+        {% comment %} <div class="col-md-3">
+          <label class="form-label">Year</label>
+          {{ monthly_form.year }}
+        </div> {% endcomment %}
+        <div class="col-12">
+          <button type="submit" class="btn btn-dark px-4" style="border-radius:12px;">View</button>
+        </div>
+      </form>
+      {% endif %}
+    </div>
+
+    {% if report_type == 'daily' and summary %}
+    <div class="cardx mb-4">
+      <h5 class="fw-semibold mb-2">{{ summary.program }} — {{ summary.batch }} | {{ summary.date }}</h5>
+      <div class="row text-center mb-3">
+        <div class="col">Total<br><strong>{{ summary.total }}</strong></div>
+        <div class="col">Present<br><strong>{{ summary.present }}</strong></div>
+        <div class="col">Absent<br><strong>{{ summary.absent }}</strong></div>
+        <div class="col">%<br><strong>{{ summary.percent }}%</strong></div>
+      </div>
+
+      <table class="table align-middle">
+        <thead><tr><th>Student</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.student.full_name }}</td>
+            <td>
+              {% if r.is_present %}
+                <span class="badge bg-success">Present</span>
+              {% else %}
+                <span class="badge bg-danger">Absent</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    {% if report_type == 'monthly' and meta %}
+    <div class="cardx">
+      <h5 class="fw-semibold mb-2">
+        {{ meta.program }} — {{ meta.batch }} |
+        {{ meta.month }}/{{ meta.year }}
+      </h5>
+
+      <table class="table align-middle">
+        <thead><tr><th>Student</th><th>Total</th><th>Present</th><th>Absent</th><th>%</th></tr></thead>
+        <tbody>
+          {% for r in table %}
+          <tr>
+            <td>{{ r.student.full_name }}</td>
+            <td>{{ r.total }}</td>
+            <td>{{ r.present }}</td>
+            <td>{{ r.absent }}</td>
+            <td>{{ r.percent }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+

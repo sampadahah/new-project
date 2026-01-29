@@ -129,17 +129,12 @@
 
       <a class="side-link {% if request.path == 'mark/' %}active{% endif %}"
          href="{% url 'attendance_mark' %}">
-        <i class="bi bi-speedometer2"></i> Attendance
+        <i class="bi bi-clipboard-check"></i> Attendance
       </a>
 
-      <a class="side-link {% if request.path == 'report/daily/' %}active{% endif %}"
-         href="{% url 'attendance_daily_report' %}">
-        <i class="bi bi-speedometer2"></i> Daily Report
-      </a>
-
-      <a class="side-link {% if request.path == 'report/monthly/' %}active{% endif %}"
-         href="{% url 'attendance_monthly_report' %}">
-        <i class="bi bi-speedometer2"></i> Monthly Report
+      <a class="side-link {% if request.path == 'report/' %}active{% endif %}"
+         href="{% url 'attendance_report' %}">
+        <i class="bi bi-bar-chart-line"></i> Attendance Report
       </a>
 
       <hr style="border-color: rgba(255,255,255,0.25);" />

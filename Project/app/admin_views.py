@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Student, Attendance
-from .forms import StudentForm, AttendanceMarkForm, AttendanceMonthForm
+from .forms import StudentForm, AttendanceMarkForm, DailyReportForm, MonthlyReportForm
 import calendar
 from datetime import date as dt_date
 from django.db.models import Count, Q
@@ -106,7 +106,7 @@ def mark_attendance(request):
             a.marked_by = request.user
             a.save()
 
-        return redirect("attendance_daily_report")  # go to report page
+        return redirect("attendance_report")  # go to report page
 
     rows = []
     for s in students:
@@ -134,27 +134,127 @@ def edit_attendance(request, pk):
         record.is_present = (status == "present")
         record.marked_by = request.user
         record.save()
-        return redirect("attendance_daily_report")
+        return redirect("attendance_report")
 
     return render(request, "admin/edit.html", {"record": record})
 
 
 # 3) DAILY REPORT (program+batch+date)
+# @login_required
+# @user_passes_test(is_admin)
+# def daily_report(request):
+#     form = AttendanceMarkForm(request.GET or None)
+#     rows = None
+#     summary = None
+
+#     if form.is_valid():
+#         att_date = form.cleaned_data["date"]
+#         program = form.cleaned_data["program"]
+#         batch = form.cleaned_data["batch"]
+
+#         students = Student.objects.filter(program=program, batch=batch).order_by("full_name")
+#         qs = Attendance.objects.filter(student__in=students, date=att_date).select_related("student")
+
+#         att_map = {a.student_id: a for a in qs}
+
+#         present_count = 0
+#         rows = []
+#         for s in students:
+#             a = att_map.get(s.id)
+#             is_present = a.is_present if a else False
+#             if is_present:
+#                 present_count += 1
+
+#             rows.append({
+#                 "student": s,
+#                 "record": a,   # can be None if not marked
+#                 "is_present": is_present,
+#             })
+
+#         total = students.count()
+#         summary = {
+#             "date": att_date,
+#             "program": program,
+#             "batch": batch,
+#             "total": total,
+#             "present": present_count,
+#             "absent": total - present_count,
+#             "percent": round((present_count / total) * 100, 2) if total else 0
+#         }
+
+#     return render(request, "admin/daily_report.html", {"form": form, "rows": rows, "summary": summary})
+
+
+# # 4) MONTHLY REPORT
+# @login_required
+# @user_passes_test(is_admin)
+# def monthly_report(request):
+#     form = AttendanceMonthForm(request.GET or None)
+#     table = None
+#     meta = None
+
+#     if form.is_valid():
+#         program = form.cleaned_data["program"]
+#         batch = form.cleaned_data["batch"]
+#         month = int(form.cleaned_data["month"])
+#         year = form.cleaned_data["year"]
+
+#         last_day = calendar.monthrange(year, month)[1]
+#         start = dt_date(year, month, 1)
+#         end = dt_date(year, month, last_day)
+
+#         students = Student.objects.filter(program=program, batch=batch).order_by("full_name")
+
+#         qs = Attendance.objects.filter(student__in=students, date__range=(start, end))
+
+#         agg = (
+#             qs.values("student_id")
+#             .annotate(
+#                 present=Count("id", filter=Q(is_present=True)),
+#                 absent=Count("id", filter=Q(is_present=False)),
+#                 total=Count("id"),
+#             )
+#         )
+#         agg_map = {a["student_id"]: a for a in agg}
+
+#         table = []
+#         for s in students:
+#             a = agg_map.get(s.id, {"present": 0, "absent": 0, "total": 0})
+#             total = a["total"]
+#             present = a["present"]
+#             percent = round((present / total) * 100, 2) if total else 0
+
+#             table.append({
+#                 "student": s,
+#                 "total": total,
+#                 "present": present,
+#                 "absent": a["absent"],
+#                 "percent": percent
+#             })
+
+#         meta = {"program": program, "batch": batch, "month": month, "year": year, "start": start, "end": end}
+
+#     return render(request, "admin/monthly_report.html", {"form": form, "table": table, "meta": meta})
+
 @login_required
 @user_passes_test(is_admin)
-def daily_report(request):
-    form = AttendanceMarkForm(request.GET or None)
-    rows = None
-    summary = None
+def attendance_report(request):
+    report_type = request.GET.get("type", "daily")  # "daily" or "monthly"
 
-    if form.is_valid():
-        att_date = form.cleaned_data["date"]
-        program = form.cleaned_data["program"]
-        batch = form.cleaned_data["batch"]
+    daily_form = DailyReportForm(request.GET or None)
+    monthly_form = MonthlyReportForm(request.GET or None)
+
+    daily_ctx = {"rows": None, "summary": None}
+    monthly_ctx = {"table": None, "meta": None}
+
+    # DAILY
+    if report_type == "daily" and daily_form.is_valid():
+        att_date = daily_form.cleaned_data["date"]
+        program = daily_form.cleaned_data["program"]
+        batch = daily_form.cleaned_data["batch"]
 
         students = Student.objects.filter(program=program, batch=batch).order_by("full_name")
         qs = Attendance.objects.filter(student__in=students, date=att_date).select_related("student")
-
         att_map = {a.student_id: a for a in qs}
 
         present_count = 0
@@ -164,47 +264,32 @@ def daily_report(request):
             is_present = a.is_present if a else False
             if is_present:
                 present_count += 1
-
-            rows.append({
-                "student": s,
-                "record": a,   # can be None if not marked
-                "is_present": is_present,
-            })
+            rows.append({"student": s, "is_present": is_present})
 
         total = students.count()
-        summary = {
+        daily_ctx["rows"] = rows
+        daily_ctx["summary"] = {
             "date": att_date,
             "program": program,
             "batch": batch,
             "total": total,
             "present": present_count,
             "absent": total - present_count,
-            "percent": round((present_count / total) * 100, 2) if total else 0
+            "percent": round((present_count / total) * 100, 2) if total else 0,
         }
 
-    return render(request, "admin/daily_report.html", {"form": form, "rows": rows, "summary": summary})
-
-
-# 4) MONTHLY REPORT
-@login_required
-@user_passes_test(is_admin)
-def monthly_report(request):
-    form = AttendanceMonthForm(request.GET or None)
-    table = None
-    meta = None
-
-    if form.is_valid():
-        program = form.cleaned_data["program"]
-        batch = form.cleaned_data["batch"]
-        month = int(form.cleaned_data["month"])
-        year = form.cleaned_data["year"]
+    # MONTHLY
+    if report_type == "monthly" and monthly_form.is_valid():
+        program = monthly_form.cleaned_data["program"]
+        batch = monthly_form.cleaned_data["batch"]
+        month = int(monthly_form.cleaned_data["month"])
+        year = int(monthly_form.cleaned_data["year"])
 
         last_day = calendar.monthrange(year, month)[1]
-        start = dt_date(year, month, 1)
+        start = dt_date( year, month, 1)
         end = dt_date(year, month, last_day)
 
         students = Student.objects.filter(program=program, batch=batch).order_by("full_name")
-
         qs = Attendance.objects.filter(student__in=students, date__range=(start, end))
 
         agg = (
@@ -223,15 +308,19 @@ def monthly_report(request):
             total = a["total"]
             present = a["present"]
             percent = round((present / total) * 100, 2) if total else 0
+            table.append({"student": s, "total": total, "present": present, "absent": a["absent"], "percent": percent})
 
-            table.append({
-                "student": s,
-                "total": total,
-                "present": present,
-                "absent": a["absent"],
-                "percent": percent
-            })
+        monthly_ctx["table"] = table
+        monthly_ctx["meta"] = {"program": program, "batch": batch, "year":year, "month": month,  "start": start, "end": end}
 
-        meta = {"program": program, "batch": batch, "month": month, "year": year, "start": start, "end": end}
-
-    return render(request, "admin/monthly_report.html", {"form": form, "table": table, "meta": meta})
+    return render(
+        request,
+        "admin/report.html",
+        {
+            "report_type": report_type,
+            "daily_form": daily_form,
+            "monthly_form": monthly_form,
+            **daily_ctx,
+            **monthly_ctx,
+        },
+    )
