@@ -193,6 +193,12 @@
             </li>
 
             {% if user.is_authenticated %}
+              {% if not user.is_superuser %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'student_dashboard' %}">Dashboard</a>
+                </li>
+              {% endif %}
+              
               <li class="nav-item dropdown profile-dropdown">
                 <a
                   class="nav-link dropdown-toggle"
@@ -207,7 +213,6 @@
                     {{ user.username }}
                   </span>
                 </a>
-
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li>
                     <a class="dropdown-item" href="{% url 'profile' %}">

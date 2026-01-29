@@ -1,0 +1,182 @@
+{% extends 'student_base.html' %}
+
+{% block title %}Attendance History{% endblock %}
+
+{% block content %}
+{% if no_student_record %}
+<div class="glass-card text-center">
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{ message }}
+    </div>
+</div>
+{% else %}
+<!-- Header -->
+<div class="glass-card mb-4">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-clock-history me-2"></i>Attendance History
+            </h2>
+            <p class="text-muted mb-0">{{ student.full_name }} • {{ student.student_id }}</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'student_dashboard' %}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="glass-card mb-4">
+    <h5 class="fw-semibold mb-3">
+        <i class="bi bi-funnel me-2"></i>Filter Records
+    </h5>
+    <form method="GET" class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label">Year</label>
+            <select name="year" class="form-select">
+                <option value="">All Years</option>
+                {% for year in years %}
+                    <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>
+                        {{ year }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Month</label>
+            <select name="month" class="form-select">
+                <option value="">All Months</option>
+                {% for month_num, month_name in months %}
+                    <option value="{{ month_num }}" {% if month_num == selected_month %}selected{% endif %}>
+                        {{ month_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select">
+                <option value="all" {% if selected_status == 'all' or not selected_status %}selected{% endif %}>All</option>
+                <option value="present" {% if selected_status == 'present' %}selected{% endif %}>Present Only</option>
+                <option value="absent" {% if selected_status == 'absent' %}selected{% endif %}>Absent Only</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">&nbsp;</label>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i>Filter
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Attendance Records -->
+<div class="glass-card">
+    <h5 class="fw-semibold mb-3">
+        <i class="bi bi-list-ul me-2"></i>Attendance Records
+    </h5>
+    
+    {% if attendance_records %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th><i class="bi bi-calendar3 me-1"></i>Date</th>
+                        <th><i class="bi bi-calendar-day me-1"></i>Day</th>
+                        <th><i class="bi bi-check-circle me-1"></i>Status</th>
+                        <th><i class="bi bi-person me-1"></i>Marked By</th>
+                        <th><i class="bi bi-clock me-1"></i>Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in attendance_records %}
+                    <tr>
+                        <td class="fw-semibold">{{ record.date|date:"M d, Y" }}</td>
+                        <td class="text-muted">{{ record.date|date:"l" }}</td>
+                        <td>
+                            {% if record.is_present %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>Present
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-x-circle me-1"></i>Absent
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted">
+                            {% if record.marked_by %}
+                                {{ record.marked_by.username }}
+                            {% else %}
+                                System
+                            {% endif %}
+                        </td>
+                        <td class="text-muted small">{{ record.updated_at|date:"M d, Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if attendance_records|length == 100 %}
+            <div class="alert alert-info mt-3">
+                <i class="bi bi-info-circle me-2"></i>
+                Showing latest 100 records. Use filters to narrow down results.
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-calendar-x fs-1 text-muted mb-3"></i>
+            <h5 class="text-muted">No attendance records found</h5>
+            <p class="text-muted">Try adjusting your filters or check back later.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Summary Stats -->
+{% if attendance_records %}
+<div class="row g-4 mt-2">
+    <div class="col-md-4">
+        <div class="glass-card text-center">
+            <div class="text-primary mb-2">
+                <i class="bi bi-calendar-check fs-2"></i>
+            </div>
+            <h4 class="fw-bold text-primary">{{ attendance_records|length }}</h4>
+            <p class="text-muted mb-0">Total Records</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card text-center">
+            <div class="text-success mb-2">
+                <i class="bi bi-check-circle fs-2"></i>
+            </div>
+            <h4 class="fw-bold text-success">
+                {% for record in attendance_records %}
+                    {% if record.is_present %}{{ forloop.counter0|add:1 }}{% endif %}
+                {% empty %}0{% endfor %}
+            </h4>
+            <p class="text-muted mb-0">Present Days</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card text-center">
+            <div class="text-danger mb-2">
+                <i class="bi bi-x-circle fs-2"></i>
+            </div>
+            <h4 class="fw-bold text-danger">
+                {% for record in attendance_records %}
+                    {% if not record.is_present %}{{ forloop.counter0|add:1 }}{% endif %}
+                {% empty %}0{% endfor %}
+            </h4>
+            <p class="text-muted mb-0">Absent Days</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

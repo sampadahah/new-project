@@ -1,0 +1,116 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Edit Student{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="cardx mb-4" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none;">
+  <div class="row align-items-center">
+    <div class="col">
+      <h2 class="fw-bold mb-1">
+        <i class="bi bi-pencil-square me-2"></i>Edit Student Profile
+      </h2>
+      <p class="mb-0" style="opacity: 0.9;">
+        Update student details
+      </p>
+    </div>
+    <div class="col-auto">
+      <i class="bi bi-person-check" style="font-size: 3rem; opacity: 0.2;"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Form Container -->
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- STUDENT INFORMATION SECTION -->
+      <div class="cardx" style="border-left: 4px solid #f59e0b;">
+        <h5 class="fw-semibold mb-3">
+          <i class="bi bi-person-badge-fill text-warning me-2"></i>Student Information
+        </h5>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-hash me-1"></i>Student ID <span class="text-danger">*</span>
+            </label>
+            {{ form.student_id }}
+            {% for e in form.student_id.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-person me-1"></i>Full Name <span class="text-danger">*</span>
+            </label>
+            {{ form.full_name }}
+            {% for e in form.full_name.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-envelope me-1"></i>Email Address <span class="text-danger">*</span>
+            </label>
+            {{ form.email }}
+            {% for e in form.email.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-mortarboard me-1"></i>Program <span class="text-danger">*</span>
+            </label>
+            {{ form.program }}
+            {% for e in form.program.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-calendar3 me-1"></i>Batch <span class="text-danger">*</span>
+            </label>
+            {{ form.batch }}
+            {% for e in form.batch.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-envelope me-1"></i> Year<span class="text-danger">*</span>
+            </label>
+            {{ form.year }}
+            {% for e in form.year.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="alert alert-info d-flex align-items-start">
+          <i class="bi bi-info-circle me-2 mt-1"></i>
+          <small>Note: Student login credentials cannot be changed here. They must be changed from the student's profile page.</small>
+        </div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary flex-grow-1" style="border-radius: 12px; padding: 12px;" type="submit">
+          <i class="bi bi-check-circle me-2"></i>Update Student
+        </button>
+        <a href="{% url 'student_list' %}" class="btn btn-outline-secondary" style="border-radius: 12px; padding: 12px;">
+          <i class="bi bi-x-circle me-2"></i>Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

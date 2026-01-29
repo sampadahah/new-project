@@ -32,6 +32,7 @@ class Student(models.Model):
     email = models.EmailField(unique=True)
     program = models.CharField(max_length=100)
     batch = models.CharField(max_length=30)
+    year = models.IntegerField(max_length=30, default=2022)
 
     created_at = models.DateTimeField(auto_now_add=True)
 

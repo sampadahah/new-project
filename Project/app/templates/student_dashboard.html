@@ -1,0 +1,357 @@
+{% extends 'student_base.html' %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+{% if no_student_record %}
+<div class="glass-card text-center">
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{ message }}
+    </div>
+</div>
+{% else %}
+
+<!-- Welcome Header -->
+<div class="glass-card mb-4">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="fw-bold mb-1">Welcome back, {{ student.full_name }}! 👋</h2>
+            <p class="text-muted mb-0">
+                <i class="bi bi-person-badge me-1"></i>{{ student.student_id }} • 
+                <i class="bi bi-mortarboard me-1"></i>{{ student.program }} • 
+                <i class="bi bi-calendar3 me-1"></i>Batch {{ student.batch }}
+            </p>
+            {% if last_attendance_date %}
+            <p class="text-muted small mb-0 mt-1">
+                <i class="bi bi-clock-history me-1"></i>
+                Last attendance: {{ last_attendance_date|date:"M d, Y" }}
+                {% if last_attendance_status %}
+                    <span class="badge bg-success ms-1">Present</span>
+                {% else %}
+                    <span class="badge bg-danger ms-1">Absent</span>
+                {% endif %}
+            </p>
+            {% endif %}
+        </div>
+        <div class="col-auto text-end">
+            <div class="badge bg-{{ status_class }} fs-5 px-3 py-2 mb-2">
+                {{ attendance_percentage }}% Overall
+            </div>
+            <div class="text-muted small">
+                <i class="{{ status_icon }} me-1"></i>{{ status_message }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Primary Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="glass-card text-center h-100">
+            <div class="text-primary mb-2">
+                <i class="bi bi-calendar-check fs-1"></i>
+            </div>
+            <h3 class="fw-bold text-primary mb-1">{{ total_attendance }}</h3>
+            <p class="text-muted mb-0 small">Total Days Tracked</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card text-center h-100">
+            <div class="text-success mb-2">
+                <i class="bi bi-check-circle fs-1"></i>
+            </div>
+            <h3 class="fw-bold text-success mb-1">{{ present_days }}</h3>
+            <p class="text-muted mb-0 small">Days Present</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card text-center h-100">
+            <div class="text-danger mb-2">
+                <i class="bi bi-x-circle fs-1"></i>
+            </div>
+            <h3 class="fw-bold text-danger mb-1">{{ absent_days }}</h3>
+            <p class="text-muted mb-0 small">Days Absent</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card text-center h-100">
+            <div class="text-info mb-2">
+                <i class="bi bi-graph-up fs-1"></i>
+            </div>
+            <h3 class="fw-bold text-info mb-1">{{ attendance_percentage }}%</h3>
+            <p class="text-muted mb-0 small">Attendance Rate</p>
+        </div>
+    </div>
+</div>
+
+<!-- Period-wise Statistics -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="glass-card h-100">
+            <h6 class="fw-semibold mb-3">
+                <i class="bi bi-calendar-month text-primary me-2"></i>This Month's Attendance
+            </h6>
+            {% if this_month_total > 0 %}
+            <div class="row text-center mb-3">
+                <div class="col-4">
+                    <h4 class="text-primary mb-0">{{ this_month_total }}</h4>
+                    <small class="text-muted">Total</small>
+                </div>
+                <div class="col-4">
+                    <h4 class="text-success mb-0">{{ this_month_present }}</h4>
+                    <small class="text-muted">Present</small>
+                </div>
+                <div class="col-4">
+                    <h4 class="text-danger mb-0">{{ this_month_absent }}</h4>
+                    <small class="text-muted">Absent</small>
+                </div>
+            </div>
+            <div class="progress" style="height: 25px;">
+                <div class="progress-bar bg-success" style="width: {{ this_month_percentage }}%">
+                    {{ this_month_percentage }}%
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center text-muted py-3">
+                <i class="bi bi-calendar-x fs-2"></i>
+                <p class="mb-0">No attendance records this month</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="glass-card h-100">
+            <h6 class="fw-semibold mb-3">
+                <i class="bi bi-calendar-week text-info me-2"></i>Last 7 Days
+            </h6>
+            {% if week_total > 0 %}
+            <div class="row text-center mb-3">
+                <div class="col-4">
+                    <h4 class="text-primary mb-0">{{ week_total }}</h4>
+                    <small class="text-muted">Total</small>
+                </div>
+                <div class="col-4">
+                    <h4 class="text-success mb-0">{{ week_present }}</h4>
+                    <small class="text-muted">Present</small>
+                </div>
+                <div class="col-4">
+                    <h4 class="text-danger mb-0">{{ week_absent }}</h4>
+                    <small class="text-muted">Absent</small>
+                </div>
+            </div>
+            <div class="progress" style="height: 25px;">
+                <div class="progress-bar bg-info" style="width: {{ week_percentage }}%">
+                    {{ week_percentage }}%
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center text-muted py-3">
+                <i class="bi bi-calendar-x fs-2"></i>
+                <p class="mb-0">No attendance records in the last 7 days</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Attendance Trend Chart -->
+    <div class="col-md-8">
+        <div class="glass-card">
+            <h5 class="fw-semibold mb-3">
+                <i class="bi bi-graph-up-arrow me-2"></i>30-Day Attendance Trend
+            </h5>
+            {% if trend_dates %}
+            <canvas id="trendChart" style="max-height: 300px;"></canvas>
+            {% else %}
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-graph-up fs-1"></i>
+                <p>No trend data available yet</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Recent Attendance -->
+    <div class="col-md-4">
+        <div class="glass-card h-100">
+            <h5 class="fw-semibold mb-3">
+                <i class="bi bi-clock-history me-2"></i>Recent Records
+            </h5>
+            {% if recent_attendance %}
+                <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+                    {% for attendance in recent_attendance %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2">
+                        <div>
+                            <strong class="d-block">{{ attendance.date|date:"M d" }}</strong>
+                            <small class="text-muted">{{ attendance.date|date:"l" }}</small>
+                        </div>
+                        {% if attendance.is_present %}
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-lg"></i> Present
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger">
+                                <i class="bi bi-x-lg"></i> Absent
+                            </span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-calendar-x fs-1 mb-2"></i>
+                    <p>No attendance records found.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Overview with Donut Chart -->
+<div class="row g-4 mb-4">
+    <div class="col-md-8">
+        <div class="glass-card">
+            <h5 class="fw-semibold mb-3">
+                <i class="bi bi-pie-chart me-2"></i>Overall Attendance Distribution
+            </h5>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <canvas id="attendanceChart" style="max-height: 250px;"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-success me-3" style="width: 20px; height: 20px;"></div>
+                        <div>
+                            <div class="fw-semibold">Present Days</div>
+                            <div class="text-muted small">{{ present_days }} out of {{ total_attendance }} days</div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-danger me-3" style="width: 20px; height: 20px;"></div>
+                        <div>
+                            <div class="fw-semibold">Absent Days</div>
+                            <div class="text-muted small">{{ absent_days }} out of {{ total_attendance }} days</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="col-md-4">
+        <div class="glass-card h-100">
+            <h5 class="fw-semibold mb-3">
+                <i class="bi bi-lightning-charge me-2"></i>Quick Actions
+            </h5>
+            <div class="d-grid gap-2">
+                <a href="{% url 'attendance_history' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-clock-history me-2"></i>Full History
+                </a>
+                <a href="{% url 'monthly_summary' %}" class="btn btn-outline-info">
+                    <i class="bi bi-calendar-month me-2"></i>Monthly View
+                </a>
+                <a href="{% url 'profile' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-person-gear me-2"></i>Update Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Donut Chart - Overall Attendance
+    const ctxDonut = document.getElementById('attendanceChart');
+    if (ctxDonut) {
+        new Chart(ctxDonut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Present', 'Absent'],
+                datasets: [{
+                    data: [{{ present_days }}, {{ absent_days }}],
+                    backgroundColor: ['#28a745', '#dc3545'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 13, weight: '500' }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Line Chart - 30-Day Trend
+    const ctxLine = document.getElementById('trendChart');
+    if (ctxLine) {
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: {{ trend_dates|safe }},
+                datasets: [{
+                    label: 'Attendance',
+                    data: {{ trend_status|safe }},
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#4f46e5',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1,
+                        ticks: {
+                            stepSize: 1,
+                            callback: function(value) {
+                                return value === 1 ? 'Present' : 'Absent';
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y === 1 ? 'Present' : 'Absent';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endif %}
+{% endblock %}

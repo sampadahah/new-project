@@ -10,7 +10,7 @@ from django.db.models import Count, Q
 def is_admin(user):
     return user.is_authenticated and user.is_superuser
 
-
+@login_required
 #  Admin dashboard (basic stats + entry points)
 @user_passes_test(is_admin)
 def admin_dashboard(request):
@@ -27,9 +27,8 @@ def student_list(request):
         "students": students
     })
 
-
+@login_required
 #  Add student
-@user_passes_test(is_admin)
 def student_add(request):
     if request.method == "POST":
         form = StudentForm(request.POST)
@@ -39,12 +38,22 @@ def student_add(request):
     else:
         form = StudentForm()
 
-    return render(request, "admin/student_form.html", {
-        "form": form,
-        "title": "Add Student"
-    })
+    return render(request, "admin/student_add.html", {"form": form})
+# @user_passes_test(is_admin)
+# def student_add(request):
+#     if request.method == "POST":
+#         form = StudentForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect("student_list")
+#     else:
+#         form = StudentForm()
 
+#     return render(request, "admin/student_form.html", {
+#         "form": form
+#     })
 
+@login_required
 #  Edit student
 @user_passes_test(is_admin)
 def student_edit(request, pk):
@@ -58,12 +67,12 @@ def student_edit(request, pk):
     else:
         form = StudentForm(instance=student)
 
-    return render(request, "admin/student_form.html", {
+    return render(request, "admin/student_edit.html", {
         "form": form,
         "title": "Edit Student"
     })
 
-
+@login_required
 #  Delete student (confirmation page)
 @user_passes_test(is_admin)
 def student_delete(request, pk):
@@ -77,7 +86,7 @@ def student_delete(request, pk):
         "student": student
     })
 
-# MARK DAILY ATTENDANCE
+# mark daily attendance
 @login_required
 @user_passes_test(is_admin)
 def mark_attendance(request):
@@ -106,7 +115,7 @@ def mark_attendance(request):
             a.marked_by = request.user
             a.save()
 
-        return redirect("attendance_report")  # go to report page
+        return redirect("attendance_mark")  
 
     rows = []
     for s in students:

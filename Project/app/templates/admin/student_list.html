@@ -2,14 +2,47 @@
 {% block title %}Student List{% endblock %}
 
 {% block content %}
+
+<!-- Header -->
+<div class="cardx mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+  <div class="row align-items-center">
+    <div class="col">
+      <h2 class="fw-bold mb-1">Student Management</h2>
+      <p class="mb-0" style="opacity: 0.9;">
+        <i class="bi bi-list-ul me-1"></i>Manage all enrolled students
+      </p>
+    </div>
+    <div class="col-auto">
+      <i class="bi bi-people" style="font-size: 3rem; opacity: 0.2;"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Students Count Card -->
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="cardx text-center">
+      <div class="text-primary mb-2">
+        <i class="bi bi-people fs-1"></i>
+      </div>
+      <h3 class="fw-bold text-primary mb-1">{{ students|length }}</h3>
+      <p class="text-muted mb-0 small">Total Enrolled Students</p>
+    </div>
+  </div>
+</div>
+
+<!-- Students Table -->
 <div class="cardx">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="fw-bold mb-0">Students</h3>
-    <a href="{% url 'student_add' %}" class="btn btn-dark" style="border-radius:12px;">
-      + Add Student
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="fw-semibold mb-0">
+      <i class="bi bi-table me-2"></i>Student Records
+    </h5>
+    <a href="{% url 'student_add' %}" class="btn btn-primary" style="border-radius: 12px;">
+      <i class="bi bi-person-plus-fill me-1"></i>Add New Student
     </a>
   </div>
 
+  {% if students %}
   <div class="table-responsive">
     <table class="table table-hover align-middle">
       <thead class="table-light">
@@ -19,36 +52,54 @@
           <th>Email</th>
           <th>Program</th>
           <th>Batch</th>
-          <th class="text-end">Actions</th>
+          <th class="text-center">Actions</th>
         </tr>
       </thead>
 
       <tbody>
         {% for s in students %}
           <tr>
-            <td>{{ s.student_id }}</td>
-            <td>{{ s.full_name }}</td>
-            <td>{{ s.email }}</td>
-            <td>{{ s.program }}</td>
-            <td>{{ s.batch }}</td>
-            <td class="text-end">
-              <a href="{% url 'student_edit' s.pk %}" class="btn btn-sm btn-outline-primary">
-                Edit
-              </a>
-              <a href="{% url 'student_delete' s.pk %}" class="btn btn-sm btn-outline-danger">
-                Delete
-              </a>
+            <td>
+              <span class="badge bg-light text-dark">{{ s.student_id }}</span>
             </td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="6" class="text-center text-muted py-4">
-              No students found.
+            <td>
+              <strong>{{ s.full_name }}</strong>
+            </td>
+            <td>
+              <small class="text-muted">{{ s.email }}</small>
+            </td>
+            <td>
+              <span class="badge bg-info-light text-info">{{ s.program }}</span>
+            </td>
+            <td>
+              <span class="badge bg-secondary-light text-secondary">{{ s.batch }}</span>
+            </td>
+            <td class="text-center">
+              <a href="{% url 'student_edit' s.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                <i class="bi bi-pencil-square"></i>
+              </a>
+              <a href="{% url 'student_delete' s.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                <i class="bi bi-trash"></i>
+              </a>
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
+  {% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-inbox fs-1 text-muted mb-2"></i>
+    <p class="text-muted">No students found. <a href="{% url 'student_add' %}">Add one now</a></p>
+  </div>
+  {% endif %}
 </div>
+
+<style>
+  .bg-info-light { background-color: #cffafe; }
+  .text-info { color: #0891b2; }
+  .bg-secondary-light { background-color: #e5e7eb; }
+  .text-secondary { color: #4b5563; }
+</style>
+
 {% endblock %}
