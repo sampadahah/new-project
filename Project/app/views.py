@@ -17,16 +17,17 @@ def signup_view(request):
     return render(request, "signup.html", {"form": form})
 
 
-# def login_view(request):
-#     if request.method == "POST":
-#         form = LoginForm(request, data=request.POST)
-#         if form.is_valid():
-#             login(request, form.get_user())
-#             return redirect("home")
-#     else:
-#         form = LoginForm()
-#     return render(request, "login.html", {"form": form})
+from django.shortcuts import redirect, render
+from django.contrib.auth import login
+from .forms import LoginForm
+
 def login_view(request):
+    # If already logged in, redirect immediately
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            return redirect("admin_dashboard")
+        return redirect("home")
+
     if request.method == "POST":
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
@@ -35,15 +36,14 @@ def login_view(request):
 
             if user.is_superuser:
                 return redirect("admin_dashboard")
-
-            # Normal users
             return redirect("home")
     else:
         form = LoginForm()
 
     return render(request, "login.html", {"form": form})
+
 def logout_view(request):
-    logout(request)
+    logout(request)  # clears session properly
     return redirect("login")
 
 def home_view(request):
@@ -72,6 +72,7 @@ def profile_view(request):
         form = ProfileForm(instance=user)
 
     return render(request, "profile.html", {"form": form})
+
 # @login_required
 # def profile_view(request):
 #     return render(request, "profile.html")

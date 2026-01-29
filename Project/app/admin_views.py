@@ -10,7 +10,7 @@ from django.db.models import Count, Q
 def is_admin(user):
     return user.is_authenticated and user.is_superuser
 
-
+@login_required
 #  Admin dashboard (basic stats + entry points)
 @user_passes_test(is_admin)
 def admin_dashboard(request):
@@ -27,7 +27,7 @@ def student_list(request):
         "students": students
     })
 
-
+@login_required
 #  Add student
 @user_passes_test(is_admin)
 def student_add(request):
@@ -44,7 +44,7 @@ def student_add(request):
         "title": "Add Student"
     })
 
-
+@login_required
 #  Edit student
 @user_passes_test(is_admin)
 def student_edit(request, pk):
@@ -63,7 +63,7 @@ def student_edit(request, pk):
         "title": "Edit Student"
     })
 
-
+@login_required
 #  Delete student (confirmation page)
 @user_passes_test(is_admin)
 def student_delete(request, pk):
