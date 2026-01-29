@@ -2,128 +2,206 @@
 {% block title %}Attendance Reports{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-12">
 
-    <div class="cardx mb-4">
-      <h3 class="fw-bold mb-3">Attendance Reports</h3>
-
-      <!-- Tabs -->
-      <div class="d-flex gap-2 mb-3">
-        <a href="?type=daily"
-           class="btn {% if report_type == 'daily' %}btn-dark{% else %}btn-outline-dark{% endif %}"
-           style="border-radius:12px;">
-          Daily Report
-        </a>
-        <a href="?type=monthly"
-           class="btn {% if report_type == 'monthly' %}btn-dark{% else %}btn-outline-dark{% endif %}"
-           style="border-radius:12px;">
-          Monthly Report
-        </a>
-      </div>
-
-      {% if report_type == 'daily' %}
-      <!-- Daily filter -->
-      <form method="get" class="row g-3">
-        <input type="hidden" name="type" value="daily">
-        <div class="col-md-4">
-          <label class="form-label">Date</label>
-          {{ daily_form.date }}
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Program</label>
-          {{ daily_form.program }}
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Batch</label>
-          {{ daily_form.batch }}
-        </div>
-        <div class="col-12">
-          <button type="submit" class="btn btn-dark px-4" style="border-radius:12px;">View</button>
-        </div>
-      </form>
-      {% else %}
-      <!-- Monthly filter -->
-      <form method="get" class="row g-3">
-        <input type="hidden" name="type" value="monthly">
-        <div class="col-md-4">
-          <label class="form-label">Program</label>
-          {{ monthly_form.program }}
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Batch</label>
-          {{ monthly_form.batch }}
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Month</label>
-          {{ monthly_form.month }}
-        </div>
-        {% comment %} <div class="col-md-3">
-          <label class="form-label">Year</label>
-          {{ monthly_form.year }}
-        </div> {% endcomment %}
-        <div class="col-12">
-          <button type="submit" class="btn btn-dark px-4" style="border-radius:12px;">View</button>
-        </div>
-      </form>
-      {% endif %}
+<!-- Header -->
+<div class="cardx mb-4" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none;">
+  <div class="row align-items-center">
+    <div class="col">
+      <h2 class="fw-bold mb-1">
+        <i class="bi bi-bar-chart-line me-2"></i>Attendance Reports
+      </h2>
+      <p class="mb-0" style="opacity: 0.9;">
+        View daily and monthly attendance analytics
+      </p>
     </div>
-
-    {% if report_type == 'daily' and summary %}
-    <div class="cardx mb-4">
-      <h5 class="fw-semibold mb-2">{{ summary.program }} — {{ summary.batch }} | {{ summary.date }}</h5>
-      <div class="row text-center mb-3">
-        <div class="col">Total<br><strong>{{ summary.total }}</strong></div>
-        <div class="col">Present<br><strong>{{ summary.present }}</strong></div>
-        <div class="col">Absent<br><strong>{{ summary.absent }}</strong></div>
-        <div class="col">%<br><strong>{{ summary.percent }}%</strong></div>
-      </div>
-
-      <table class="table align-middle">
-        <thead><tr><th>Student</th><th>Status</th></tr></thead>
-        <tbody>
-          {% for r in rows %}
-          <tr>
-            <td>{{ r.student.full_name }}</td>
-            <td>
-              {% if r.is_present %}
-                <span class="badge bg-success">Present</span>
-              {% else %}
-                <span class="badge bg-danger">Absent</span>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="col-auto">
+      <i class="bi bi-graph-up" style="font-size: 3rem; opacity: 0.2;"></i>
     </div>
-    {% endif %}
-
-    {% if report_type == 'monthly' and meta %}
-    <div class="cardx">
-      <h5 class="fw-semibold mb-2">
-        {{ meta.program }} — {{ meta.batch }} |
-        {{ meta.month }}/{{ meta.year }}
-      </h5>
-
-      <table class="table align-middle">
-        <thead><tr><th>Student</th><th>Total</th><th>Present</th><th>Absent</th><th>%</th></tr></thead>
-        <tbody>
-          {% for r in table %}
-          <tr>
-            <td>{{ r.student.full_name }}</td>
-            <td>{{ r.total }}</td>
-            <td>{{ r.present }}</td>
-            <td>{{ r.absent }}</td>
-            <td>{{ r.percent }}%</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% endif %}
-
   </div>
 </div>
-{% endblock %}
 
+<!-- Report Type Selector -->
+<div class="cardx mb-4">
+  <h5 class="fw-semibold mb-3">
+    <i class="bi bi-bookmark me-2"></i>Report Type
+  </h5>
+  <div class="btn-group w-100" role="group">
+    <a href="?type=daily"
+       class="btn {% if report_type == 'daily' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+       style="border-radius: 12px 0 0 12px;">
+      <i class="bi bi-calendar-day me-1"></i>Daily Report
+    </a>
+    <a href="?type=monthly"
+       class="btn {% if report_type == 'monthly' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+       style="border-radius: 0 12px 12px 0;">
+      <i class="bi bi-calendar-month me-1"></i>Monthly Report
+    </a>
+  </div>
+</div>
+
+<!-- Filter Form -->
+<div class="cardx mb-4" style="border-left: 4px solid #8b5cf6;">
+  <h5 class="fw-semibold mb-3">
+    <i class="bi bi-funnel me-2"></i>Filter Options
+  </h5>
+
+  {% if report_type == 'daily' %}
+  <form method="get" class="row g-3">
+    <input type="hidden" name="type" value="daily">
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Date</label>
+      {{ daily_form.date }}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Program</label>
+      {{ daily_form.program }}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Batch</label>
+      {{ daily_form.batch }}
+    </div>
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary" style="border-radius: 12px;">
+        <i class="bi bi-search me-2"></i>Generate Report
+      </button>
+    </div>
+  </form>
+  {% else %}
+  <form method="get" class="row g-3">
+    <input type="hidden" name="type" value="monthly">
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Program</label>
+      {{ monthly_form.program }}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Batch</label>
+      {{ monthly_form.batch }}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Month</label>
+      {{ monthly_form.month }}
+    </div>
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary" style="border-radius: 12px;">
+        <i class="bi bi-search me-2"></i>Generate Report
+      </button>
+    </div>
+  </form>
+  {% endif %}
+</div>
+
+<!-- Daily Report Results -->
+{% if report_type == 'daily' and summary %}
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="cardx text-center" style="border-left: 4px solid #06b6d4;">
+      <h4 class="fw-bold text-primary mb-1">{{ summary.total }}</h4>
+      <p class="text-muted small">Total Students</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="cardx text-center" style="border-left: 4px solid #10b981;">
+      <h4 class="fw-bold text-success mb-1">{{ summary.present }}</h4>
+      <p class="text-muted small">Present</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="cardx text-center" style="border-left: 4px solid #ef4444;">
+      <h4 class="fw-bold text-danger mb-1">{{ summary.absent }}</h4>
+      <p class="text-muted small">Absent</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="cardx text-center" style="border-left: 4px solid #f59e0b;">
+      <h4 class="fw-bold text-warning mb-1">{{ summary.percent }}%</h4>
+      <p class="text-muted small">Attendance Rate</p>
+    </div>
+  </div>
+</div>
+
+<div class="cardx">
+  <h5 class="fw-semibold mb-3">
+    <i class="bi bi-table me-2"></i>
+    <span class="badge bg-info">{{ summary.program }}</span>
+    <span class="badge bg-secondary">{{ summary.batch }}</span>
+    <span class="badge bg-light text-dark">{{ summary.date|date:"M d, Y" }}</span>
+  </h5>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Student Name</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td>{{ r.student.full_name }}</td>
+          <td>
+            {% if r.is_present %}
+              <span class="badge bg-success">
+                <i class="bi bi-check-circle me-1"></i>Present
+              </span>
+            {% else %}
+              <span class="badge bg-danger">
+                <i class="bi bi-x-circle me-1"></i>Absent
+              </span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Monthly Report Results -->
+{% if report_type == 'monthly' and meta %}
+<div class="cardx">
+  <h5 class="fw-semibold mb-3">
+    <i class="bi bi-table me-2"></i>
+    <span class="badge bg-info">{{ meta.program }}</span>
+    <span class="badge bg-secondary">{{ meta.batch }}</span>
+    <span class="badge bg-light text-dark">{{ meta.month }}/{{ meta.year }}</span>
+  </h5>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Student Name</th>
+          <th class="text-center">Total Days</th>
+          <th class="text-center">Present</th>
+          <th class="text-center">Absent</th>
+          <th class="text-center">%</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in table %}
+        <tr>
+          <td>{{ r.student.full_name }}</td>
+          <td class="text-center">{{ r.total }}</td>
+          <td class="text-center">
+            <span class="badge bg-success">{{ r.present }}</span>
+          </td>
+          <td class="text-center">
+            <span class="badge bg-danger">{{ r.absent }}</span>
+          </td>
+          <td class="text-center">
+            <span class="fw-bold">{{ r.percent }}%</span>
+            <div class="progress mt-1" style="height: 4px;">
+              <div class="progress-bar" style="width: {{ r.percent }}%"></div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

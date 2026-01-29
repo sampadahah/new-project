@@ -9,6 +9,7 @@ from django.db.models import Count, Q
 from django.utils import timezone
 import calendar
 from datetime import datetime, timedelta
+
 # Create your views here.
 def signup_view(request):
     if request.method == "POST":
@@ -22,9 +23,7 @@ def signup_view(request):
     return render(request, "signup.html", {"form": form})
 
 
-from django.shortcuts import redirect, render
-from django.contrib.auth import login
-from .forms import LoginForm
+
 
 def login_view(request):
     # If already logged in, redirect immediately
@@ -41,13 +40,13 @@ def login_view(request):
 
             if user.is_superuser:
                 return redirect("admin_dashboard")
-<<<<<<< HEAD
+
             return redirect("home")
-=======
+
 
             # Normal users go to student dashboard
             return redirect("student_dashboard")
->>>>>>> 72b4a8bf9b7009b6ff0e664b8861022efd2d9bc5
+
     else:
         form = LoginForm()
 
@@ -58,9 +57,21 @@ def logout_view(request):
     return redirect("login")
 
 def home_view(request):
+    # If user is already logged in, redirect to appropriate dashboard
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            return redirect("admin_dashboard")
+        else:
+            return redirect("student_dashboard")
     return render(request, "home.html")
 
 def about_view(request):
+    # If user is already logged in, redirect to appropriate dashboard
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            return redirect("admin_dashboard")
+        else:
+            return redirect("student_dashboard")
     return render(request, "about.html")
 
 @login_required
@@ -83,15 +94,12 @@ def profile_view(request):
         form = ProfileForm(instance=user)
 
     return render(request, "profile.html", {"form": form})
-
-<<<<<<< HEAD
-=======
-
 # ================= STUDENT VIEWS (Person 3) =================
 
 @login_required
+@login_required
 def student_dashboard(request):
-    """Student dashboard with attendance overview"""
+    """Student dashboard with comprehensive attendance analytics"""
     try:
         # Get the student record linked to this user
         student = Student.objects.get(user=request.user)
@@ -102,7 +110,9 @@ def student_dashboard(request):
             "message": "No student record found. Please contact admin."
         })
     
-    # Get attendance statistics
+    today = timezone.localdate()
+    
+    # ========== OVERALL STATISTICS ==========
     total_attendance = Attendance.objects.filter(student=student).count()
     present_days = Attendance.objects.filter(student=student, is_present=True).count()
     absent_days = total_attendance - present_days
@@ -110,11 +120,10 @@ def student_dashboard(request):
     # Calculate attendance percentage
     attendance_percentage = round((present_days / total_attendance) * 100, 2) if total_attendance > 0 else 0
     
-    # Get recent attendance (last 7 records)
-    recent_attendance = Attendance.objects.filter(student=student).order_by('-date')[:7]
+    # Get recent attendance (last 10 records)
+    recent_attendance = Attendance.objects.filter(student=student).order_by('-date')[:10]
     
-    # This month's attendance
-    today = timezone.localdate()
+    # ========== THIS MONTH'S ATTENDANCE ==========
     start_of_month = today.replace(day=1)
     this_month_total = Attendance.objects.filter(
         student=student, 
@@ -127,9 +136,10 @@ def student_dashboard(request):
         date__lte=today,
         is_present=True
     ).count()
+    this_month_absent = this_month_total - this_month_present
     this_month_percentage = round((this_month_present / this_month_total) * 100, 2) if this_month_total > 0 else 0
     
-    # Last 7 days attendance
+    # ========== LAST 7 DAYS ATTENDANCE ==========
     week_ago = today - timedelta(days=7)
     week_total = Attendance.objects.filter(
         student=student,
@@ -142,21 +152,95 @@ def student_dashboard(request):
         date__lte=today,
         is_present=True
     ).count()
+    week_absent = week_total - week_present
     week_percentage = round((week_present / week_total) * 100, 2) if week_total > 0 else 0
+    
+    # ========== ATTENDANCE TREND (Last 30 days day-by-day) ==========
+    thirty_days_ago = today - timedelta(days=30)
+    last_30_days_records = Attendance.objects.filter(
+        student=student,
+        date__gte=thirty_days_ago,
+        date__lte=today
+    ).order_by('date')
+    
+    # Create arrays for chart.js
+    trend_dates = []
+    trend_status = []  # 1 for present, 0 for absent
+    
+    for record in last_30_days_records:
+        trend_dates.append(record.date.strftime('%b %d'))
+        trend_status.append(1 if record.is_present else 0)
+    
+    # ========== ATTENDANCE STATUS DETERMINATION ==========
+    status_message = ""
+    status_class = ""
+    status_icon = ""
+    
+    if attendance_percentage >= 90:
+        status_message = "Excellent! Keep up the great work!"
+        status_class = "success"
+        status_icon = "bi-trophy-fill"
+    elif attendance_percentage >= 75:
+        status_message = "Good attendance. You're on track!"
+        status_class = "success"
+        status_icon = "bi-check-circle-fill"
+    elif attendance_percentage >= 60:
+        status_message = "Average attendance. Try to improve!"
+        status_class = "warning"
+        status_icon = "bi-exclamation-triangle-fill"
+    elif attendance_percentage >= 50:
+        status_message = "Below average. Need improvement!"
+        status_class = "warning"
+        status_icon = "bi-exclamation-circle-fill"
+    else:
+        status_message = "Critical! Attend classes regularly!"
+        status_class = "danger"
+        status_icon = "bi-x-circle-fill"
+    
+    # ========== LAST ATTENDANCE DATE ==========
+    last_attendance = Attendance.objects.filter(student=student).order_by('-date').first()
+    last_attendance_date = last_attendance.date if last_attendance else None
+    last_attendance_status = last_attendance.is_present if last_attendance else None
     
     context = {
         'student': student,
+        
+        # Overall stats
         'total_attendance': total_attendance,
         'present_days': present_days,
         'absent_days': absent_days,
         'attendance_percentage': attendance_percentage,
+        
+        # Recent records
         'recent_attendance': recent_attendance,
+        
+        # This month
+        'this_month_total': this_month_total,
+        'this_month_present': this_month_present,
+        'this_month_absent': this_month_absent,
         'this_month_percentage': this_month_percentage,
+        
+        # Last 7 days
+        'week_total': week_total,
+        'week_present': week_present,
+        'week_absent': week_absent,
         'week_percentage': week_percentage,
+        
+        # Trend data for charts
+        'trend_dates': trend_dates,
+        'trend_status': trend_status,
+        
+        # Status
+        'status_message': status_message,
+        'status_class': status_class,
+        'status_icon': status_icon,
+        
+        # Last attendance
+        'last_attendance_date': last_attendance_date,
+        'last_attendance_status': last_attendance_status,
     }
     
     return render(request, "student_dashboard.html", context)
-
 
 @login_required
 def attendance_history(request):
@@ -271,7 +355,7 @@ def monthly_summary(request):
     }
     
     return render(request, "monthly_summary.html", context)
->>>>>>> 72b4a8bf9b7009b6ff0e664b8861022efd2d9bc5
+
 # @login_required
 # def profile_view(request):
 #     return render(request, "profile.html")

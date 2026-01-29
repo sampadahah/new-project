@@ -2,28 +2,174 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="cardx">
-  <h2 class="fw-bold mb-2">Dashboard</h2>
-  <p class="text-muted mb-4">
-    Quick overview of your system.
-  </p>
 
-  <div class="row g-3">
-    <div class="col-md-4">
-      <div class="cardx">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <div class="text-muted small">Total Students</div>
-            <div class="fs-3 fw-bold">{{ total_students }}</div>
-          </div>
-          <i class="bi bi-people fs-2 text-primary"></i>
+<!-- Welcome Card -->
+<div class="cardx mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+  <div class="row align-items-center">
+    <div class="col">
+      <h2 class="fw-bold mb-1">Welcome, {{ request.user.username }}! 👋</h2>
+      <p class="mb-0" style="opacity: 0.9;">
+        <i class="bi bi-shield-check me-1"></i>Administrator Access • Manage your system efficiently
+      </p>
+    </div>
+    <div class="col-auto">
+      <i class="bi bi-speedometer2" style="font-size: 3rem; opacity: 0.3;"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="cardx text-center h-100" style="border-left: 4px solid #4f46e5;">
+      <div class="text-primary mb-2">
+        <i class="bi bi-people fs-1"></i>
+      </div>
+      <h3 class="fw-bold text-primary mb-1">{{ total_students }}</h3>
+      <p class="text-muted mb-3 small">Total Students Enrolled</p>
+      <a href="{% url 'student_list' %}" class="btn btn-primary btn-sm" style="border-radius: 12px;">
+        <i class="bi bi-eye me-1"></i>View All
+      </a>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="cardx text-center h-100" style="border-left: 4px solid #10b981;">
+      <div class="text-success mb-2">
+        <i class="bi bi-clipboard-check fs-1"></i>
+      </div>
+      <h3 class="fw-bold text-success mb-1">Active</h3>
+      <p class="text-muted mb-3 small">Attendance Tracking</p>
+      <a href="{% url 'attendance_mark' %}" class="btn btn-success btn-sm" style="border-radius: 12px;">
+        <i class="bi bi-plus-circle me-1"></i>Mark Attendance
+      </a>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="cardx text-center h-100" style="border-left: 4px solid #f59e0b;">
+      <div class="text-warning mb-2">
+        <i class="bi bi-bar-chart-line fs-1"></i>
+      </div>
+      <h3 class="fw-bold text-warning mb-1">Reports</h3>
+      <p class="text-muted mb-3 small">Daily & Monthly Analytics</p>
+      <a href="{% url 'attendance_report' %}" class="btn btn-warning btn-sm" style="border-radius: 12px;">
+        <i class="bi bi-graph-up me-1"></i>View Reports
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-4 mb-4">
+  <div class="col-md-8">
+    <div class="cardx h-100">
+      <h5 class="fw-semibold mb-3">
+        <i class="bi bi-lightning-charge text-primary me-2"></i>Quick Actions
+      </h5>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <a href="{% url 'student_add' %}" class="btn btn-outline-primary w-100 text-start" style="border-radius: 12px; padding: 15px;">
+            <i class="bi bi-person-plus fs-4 me-2"></i>
+            <div class="d-inline-block">
+              <div class="fw-semibold">Add New Student</div>
+              <small class="text-muted">Create student account</small>
+            </div>
+          </a>
         </div>
+        <div class="col-md-6">
+          <a href="{% url 'student_list' %}" class="btn btn-outline-info w-100 text-start" style="border-radius: 12px; padding: 15px;">
+            <i class="bi bi-list-ul fs-4 me-2"></i>
+            <div class="d-inline-block">
+              <div class="fw-semibold">Manage Students</div>
+              <small class="text-muted">Edit or delete records</small>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-6">
+          <a href="{% url 'attendance_mark' %}" class="btn btn-outline-success w-100 text-start" style="border-radius: 12px; padding: 15px;">
+            <i class="bi bi-check-square fs-4 me-2"></i>
+            <div class="d-inline-block">
+              <div class="fw-semibold">Mark Attendance</div>
+              <small class="text-muted">Daily attendance entry</small>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-6">
+          <a href="{% url 'attendance_report' %}" class="btn btn-outline-warning w-100 text-start" style="border-radius: 12px; padding: 15px;">
+            <i class="bi bi-file-earmark-bar-graph fs-4 me-2"></i>
+            <div class="d-inline-block">
+              <div class="fw-semibold">View Reports</div>
+              <small class="text-muted">Analytics & summaries</small>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <a href="{% url 'student_list' %}" class="btn btn-dark w-100 mt-3" style="border-radius:12px;">
-          Manage Students
-        </a>
+  <div class="col-md-4">
+    <div class="cardx h-100">
+      <h5 class="fw-semibold mb-3">
+        <i class="bi bi-info-circle text-info me-2"></i>System Info
+      </h5>
+      <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="text-muted small">Total Students</span>
+          <span class="fw-bold">{{ total_students }}</span>
+        </div>
+        <div class="progress" style="height: 6px;">
+          <div class="progress-bar bg-primary" style="width: 100%"></div>
+        </div>
+      </div>
+      
+      <div class="alert alert-info py-2 mb-3">
+        <i class="bi bi-calendar-check me-1"></i>
+        <small><strong>Today:</strong> {{ today|date:"M d, Y" }}</small>
+      </div>
+
+      <div class="alert alert-success py-2">
+        <i class="bi bi-check-circle me-1"></i>
+        <small>System running smoothly</small>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Recent Activity / Tips -->
+<div class="cardx">
+  <h5 class="fw-semibold mb-3">
+    <i class="bi bi-lightbulb text-warning me-2"></i>Admin Tips
+  </h5>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="d-flex align-items-start mb-3">
+        <i class="bi bi-1-circle-fill text-primary me-2 fs-5"></i>
+        <div>
+          <div class="fw-semibold">Add Students First</div>
+          <small class="text-muted">Create student accounts with login credentials before marking attendance.</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="d-flex align-items-start mb-3">
+        <i class="bi bi-2-circle-fill text-success me-2 fs-5"></i>
+        <div>
+          <div class="fw-semibold">Mark Daily</div>
+          <small class="text-muted">Mark attendance regularly to maintain accurate records and analytics.</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="d-flex align-items-start mb-3">
+        <i class="bi bi-3-circle-fill text-info me-2 fs-5"></i>
+        <div>
+          <div class="fw-semibold">Review Reports</div>
+          <small class="text-muted">Check monthly reports to identify attendance patterns and trends.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

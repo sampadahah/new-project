@@ -2,73 +2,125 @@
 {% block title %}Mark Attendance{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-12">
 
-    <div class="cardx mb-4">
-      <h3 class="fw-bold mb-3">Mark Attendance</h3>
-
-      <form method="get" class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label">Date</label>
-          {{ form.date }}
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label">Program</label>
-          {{ form.program }}
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label">Batch</label>
-          {{ form.batch }}
-        </div>
-
-        <div class="col-12">
-          <button type="submit" class="btn btn-dark px-4" style="border-radius:12px;">
-            Load Students
-          </button>
-        </div>
-      </form>
+<!-- Header -->
+<div class="cardx mb-4" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; border: none;">
+  <div class="row align-items-center">
+    <div class="col">
+      <h2 class="fw-bold mb-1">
+        <i class="bi bi-clipboard-check me-2"></i>Mark Attendance
+      </h2>
+      <p class="mb-0" style="opacity: 0.9;">
+        Record student attendance for selected date
+      </p>
     </div>
-
-    {% if rows %}
-    <div class="cardx">
-      <h5 class="fw-semibold mb-3">
-        {{ program }} – {{ batch }} | {{ att_date }}
-      </h5>
-
-      <form method="post">
-        {% csrf_token %}
-        <table class="table align-middle">
-          <thead>
-            <tr>
-              <th>Present</th>
-              <th>Student ID</th>
-              <th>Student Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for r in rows %}
-            <tr>
-              <td>
-                <input type="checkbox" name="present" value="{{ r.student.id }}"
-                       {% if r.is_present %}checked{% endif %}>
-              </td>
-              <td>{{ r.student.student_id }}</td>
-              <td>{{ r.student.full_name }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-
-        <button type="submit" class="btn btn-success px-4" style="border-radius:12px;">
-          Save Attendance
-        </button>
-      </form>
+    <div class="col-auto">
+      <i class="bi bi-check-circle" style="font-size: 3rem; opacity: 0.2;"></i>
     </div>
-    {% endif %}
-
   </div>
 </div>
+
+<!-- Filter Form -->
+<div class="cardx mb-4" style="border-left: 4px solid #06b6d4;">
+  <h5 class="fw-semibold mb-3">
+    <i class="bi bi-funnel me-2"></i>Filter Students
+  </h5>
+
+  <form method="get" class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Date</label>
+      {{ form.date }}
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Program</label>
+      {{ form.program }}
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Batch</label>
+      {{ form.batch }}
+    </div>
+
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary" style="border-radius: 12px;">
+        <i class="bi bi-search me-2"></i>Load Students
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Attendance Table -->
+{% if rows %}
+<div class="cardx">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-semibold mb-0">
+      <i class="bi bi-table me-2"></i>
+      <span class="badge bg-info">{{ program }}</span>
+      <span class="badge bg-secondary">{{ batch }}</span>
+      <span class="badge bg-light text-dark">{{ att_date|date:"M d, Y" }}</span>
+    </h5>
+    <span class="badge bg-primary">{{ rows|length }} Students</span>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th class="text-center">Present</th>
+            <th>Student ID</th>
+            <th>Student Name</th>
+            <th class="text-end">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td class="text-center">
+              <input type="checkbox" class="form-check-input" name="present" value="{{ r.student.id }}"
+                     {% if r.is_present %}checked{% endif %}>
+            </td>
+            <td>
+              <span class="badge bg-light text-dark">{{ r.student.student_id }}</span>
+            </td>
+            <td>
+              <strong>{{ r.student.full_name }}</strong>
+            </td>
+            <td class="text-end">
+              {% if r.is_present %}
+                <span class="badge bg-success">
+                  <i class="bi bi-check-circle me-1"></i>Present
+                </span>
+              {% else %}
+                <span class="badge bg-warning">
+                  <i class="bi bi-clock me-1"></i>Not Marked
+                </span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-success flex-grow-1" style="border-radius: 12px; padding: 12px;">
+        <i class="bi bi-save me-2"></i>Save Attendance
+      </button>
+      <a href="{% url 'attendance_mark' %}" class="btn btn-outline-secondary" style="border-radius: 12px; padding: 12px;">
+        <i class="bi bi-arrow-clockwise me-2"></i>Reset
+      </a>
+    </div>
+  </form>
+</div>
+{% else %}
+<div class="cardx text-center py-5">
+  <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
+  <p class="text-muted">Select date, program, and batch to load students</p>
+</div>
+{% endif %}
+
 {% endblock %}

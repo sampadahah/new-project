@@ -29,7 +29,6 @@ def student_list(request):
 
 @login_required
 #  Add student
-@user_passes_test(is_admin)
 def student_add(request):
     if request.method == "POST":
         form = StudentForm(request.POST)
@@ -39,10 +38,20 @@ def student_add(request):
     else:
         form = StudentForm()
 
-    return render(request, "admin/student_form.html", {
-        "form": form,
-        "title": "Add Student"
-    })
+    return render(request, "admin/student_add.html", {"form": form})
+# @user_passes_test(is_admin)
+# def student_add(request):
+#     if request.method == "POST":
+#         form = StudentForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect("student_list")
+#     else:
+#         form = StudentForm()
+
+#     return render(request, "admin/student_form.html", {
+#         "form": form
+#     })
 
 @login_required
 #  Edit student

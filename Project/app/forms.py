@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser, Student
 from django.contrib.auth.password_validation import validate_password
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 import calendar
 
 class SignUpForm(UserCreationForm):
@@ -26,17 +27,49 @@ class LoginForm(AuthenticationForm):
             f.widget.attrs["class"] = "form-control"
 
 
+User = get_user_model()
+
+# ModelForm used for Add & Update operations
 # ModelForm used for Add & Update operations
 class StudentForm(forms.ModelForm):
+    username = forms.CharField(
+        max_length=150,
+        required=True,
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter username"})
+    )
+    password = forms.CharField(
+        required=True,
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter temporary password"})
+    )
+    
     class Meta:
         model = Student
         fields = ["student_id", "full_name", "email", "program", "batch"]
+        widgets = {
+            "student_id": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g., STU001"}),
+            "full_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter full name"}),
+            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "student@example.com"}),
+            "program": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g., Computer Science"}),
+            "batch": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g., 2024"}),
+        }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Apply Bootstrap class to each input
-        for f in self.fields.values():
-            f.widget.attrs["class"] = "form-control"
+    def save(self, commit=True):
+        # 1️⃣ Create login user
+        user = User.objects.create_user(
+            username=self.cleaned_data["username"],
+            password=self.cleaned_data["password"],
+            email=self.cleaned_data["email"],
+        )
+
+        # 2️⃣ Create student record
+        student = super().save(commit=False)
+        student.user = user
+
+        if commit:
+            user.save()
+            student.save()
+
+        return student
 # class EditProfileForm(forms.ModelForm):
 #     class Meta:
 #         model = CustomUser

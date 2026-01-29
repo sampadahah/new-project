@@ -2,26 +2,59 @@
 {% block title %}Delete Student{% endblock %}
 
 {% block content %}
+
+<!-- Header -->
+<div class="cardx mb-4" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none;">
+  <div class="row align-items-center">
+    <div class="col">
+      <h2 class="fw-bold mb-1">
+        <i class="bi bi-trash-fill me-2"></i>Delete Student
+      </h2>
+      <p class="mb-0" style="opacity: 0.9;">
+        This action cannot be undone
+      </p>
+    </div>
+    <div class="col-auto">
+      <i class="bi bi-exclamation-triangle" style="font-size: 3rem; opacity: 0.2;"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Card -->
 <div class="row justify-content-center">
-  <div class="col-md-7">
-    <div class="cardx text-center">
-      <h3 class="fw-bold mb-2">Delete Student</h3>
+  <div class="col-md-6">
+    <div class="cardx text-center" style="border-left: 4px solid #ef4444;">
+      <div class="mb-3">
+        <i class="bi bi-person-x fs-1 text-danger"></i>
+      </div>
+
+      <h4 class="fw-bold mb-2">Are you sure?</h4>
+
       <p class="text-muted mb-4">
-        Are you sure you want to delete <strong>{{ student.full_name }}</strong>?
-        <br />
-        This action cannot be undone.
+        You are about to delete this student profile:
       </p>
 
-      <form method="POST">
+      <div class="alert alert-light mb-4">
+        <div class="fw-semibold text-dark">{{ student.full_name }}</div>
+        <small class="text-muted">ID: {{ student.student_id }} • {{ student.email }}</small>
+      </div>
+
+      <div class="alert alert-danger mb-4">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong>Warning:</strong> All attendance records will also be deleted permanently.
+      </div>
+
+      <form method="POST" class="d-flex gap-2">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger px-4" style="border-radius:12px;">
-          Yes, Delete
+        <button type="submit" class="btn btn-danger flex-grow-1" style="border-radius: 12px; padding: 12px;">
+          <i class="bi bi-trash-fill me-2"></i>Yes, Delete Permanently
         </button>
-        <a href="{% url 'student_list' %}" class="btn btn-outline-secondary px-4 ms-2" style="border-radius:12px;">
-          Cancel
+        <a href="{% url 'student_list' %}" class="btn btn-outline-secondary flex-grow-1" style="border-radius: 12px; padding: 12px;">
+          <i class="bi bi-arrow-left me-2"></i>Cancel
         </a>
       </form>
     </div>
   </div>
 </div>
+
 {% endblock %}

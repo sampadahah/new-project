@@ -1,0 +1,136 @@
+{% extends "admin/admin_base.html" %}
+{% block title %}Add New Student{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="cardx mb-4" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none;">
+  <div class="row align-items-center">
+    <div class="col">
+      <h2 class="fw-bold mb-1">
+        <i class="bi bi-person-plus-fill me-2"></i>Add New Student
+      </h2>
+      <p class="mb-0" style="opacity: 0.9;">
+        Create a student account with login credentials
+      </p>
+    </div>
+    <div class="col-auto">
+      <i class="bi bi-person-check" style="font-size: 3rem; opacity: 0.2;"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Form Container -->
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- LOGIN CREDENTIALS SECTION -->
+      <div class="cardx" style="border-left: 4px solid #3b82f6;">
+        <h5 class="fw-semibold mb-3">
+          <i class="bi bi-key-fill text-primary me-2"></i>Login Credentials
+        </h5>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-person me-1"></i>Username <span class="text-danger">*</span>
+            </label>
+            {{ form.username }}
+            {% for e in form.username.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+            <small class="text-muted d-block mt-1">
+              Student will use this to login
+            </small>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-lock me-1"></i>Temporary Password <span class="text-danger">*</span>
+            </label>
+            {{ form.password }}
+            {% for e in form.password.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+            <small class="text-muted d-block mt-1">
+              <i class="bi bi-info-circle me-1"></i>Student can change later
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- STUDENT INFORMATION SECTION -->
+      <div class="cardx" style="border-left: 4px solid #8b5cf6;">
+        <h5 class="fw-semibold mb-3">
+          <i class="bi bi-person-badge-fill text-warning me-2"></i>Student Information
+        </h5>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-hash me-1"></i>Student ID <span class="text-danger">*</span>
+            </label>
+            {{ form.student_id }}
+            {% for e in form.student_id.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-person me-1"></i>Full Name <span class="text-danger">*</span>
+            </label>
+            {{ form.full_name }}
+            {% for e in form.full_name.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="col-md-12 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-envelope me-1"></i>Email Address <span class="text-danger">*</span>
+            </label>
+            {{ form.email }}
+            {% for e in form.email.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-mortarboard me-1"></i>Program <span class="text-danger">*</span>
+            </label>
+            {{ form.program }}
+            {% for e in form.program.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-calendar3 me-1"></i>Batch <span class="text-danger">*</span>
+            </label>
+            {{ form.batch }}
+            {% for e in form.batch.errors %}
+              <div class="text-danger small mt-1">{{ e }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="d-flex gap-2">
+        <button class="btn btn-success flex-grow-1" style="border-radius: 12px; padding: 12px;" type="submit">
+          <i class="bi bi-check-circle me-2"></i>Create Student Account
+        </button>
+        <a href="{% url 'student_list' %}" class="btn btn-outline-secondary" style="border-radius: 12px; padding: 12px;">
+          <i class="bi bi-x-circle me-2"></i>Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
