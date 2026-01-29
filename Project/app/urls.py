@@ -1,5 +1,8 @@
 from django.urls import path
-from .views import signup_view, login_view, logout_view,home_view, about_view, profile_view
+from .views import (
+    signup_view, login_view, logout_view, home_view, about_view, profile_view,
+    student_dashboard, attendance_history, monthly_summary
+)
 from .admin_views import (admin_dashboard,student_list,student_add,student_edit,student_delete,mark_attendance,edit_attendance,daily_report,monthly_report)
 
 urlpatterns = [
@@ -12,6 +15,11 @@ urlpatterns = [
     path("logout/", logout_view, name="logout"),
 
     path("profile/", profile_view, name="profile"),
+
+    # Student Views (Person 3)
+    path("dashboard/", student_dashboard, name="student_dashboard"),
+    path("attendance/history/", attendance_history, name="attendance_history"),
+    path("attendance/monthly/", monthly_summary, name="monthly_summary"),
 
     # Admin dashboard + Student CRUD
     path("admin-panel/dashboard/", admin_dashboard, name="admin_dashboard"),
