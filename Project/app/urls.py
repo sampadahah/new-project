@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import signup_view, login_view, logout_view,home_view, about_view, profile_view
-from .admin_views import (admin_dashboard,student_list,student_add,student_edit,student_delete,mark_attendance,edit_attendance,attendance_report)
+from .admin_views import (admin_dashboard,student_list,student_add,student_edit,student_delete,mark_attendance,attendance_report)
 
 urlpatterns = [
     # Home
@@ -21,8 +21,9 @@ urlpatterns = [
     path("admin-panel/students/<int:pk>/delete/", student_delete, name="student_delete"),
 
     path("mark/", mark_attendance, name="attendance_mark"),
-    path("edit/<int:pk>/", edit_attendance, name="attendance_edit"),
+    # path("edit/<int:pk>/", edit_attendance, name="attendance_edit"),
 
     path("report/", attendance_report, name="attendance_report"),
+
 
 ]
