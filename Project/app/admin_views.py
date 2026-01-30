@@ -74,12 +74,22 @@ def student_edit(request, pk):
 
 @login_required
 #  Delete student (confirmation page)
+@login_required
 @user_passes_test(is_admin)
 def student_delete(request, pk):
     student = get_object_or_404(Student, pk=pk)
 
     if request.method == "POST":
+        # Store user reference before deleting student
+        user_account = student.user
+        
+        # Delete the student record
         student.delete()
+        
+        # Also delete the associated user account if it exists
+        if user_account:
+            user_account.delete()
+        
         return redirect("student_list")
 
     return render(request, "admin/student_confirm_delete.html", {

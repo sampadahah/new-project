@@ -54,21 +54,52 @@ class StudentForm(forms.ModelForm):
             "year": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g., 2023"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # If editing existing student, don't show username/password fields
+        if self.instance.pk:
+            self.fields.pop('username', None)
+            self.fields.pop('password', None)
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if username and User.objects.filter(username=username).exists():
+            raise forms.ValidationError('This username is already taken. Please choose another one.')
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        # Check if email exists in User model (excluding current instance if editing)
+        if self.instance.pk:
+            # Editing - allow same email if it belongs to current student's user
+            if User.objects.filter(email=email).exclude(pk=self.instance.user.pk if self.instance.user else None).exists():
+                raise forms.ValidationError('This email is already registered.')
+        else:
+            # Creating new - check if email exists
+            if User.objects.filter(email=email).exists():
+                raise forms.ValidationError('This email is already registered.')
+        return email
+
     def save(self, commit=True):
-        # 1️⃣ Create login user
-        user = User.objects.create_user(
-            username=self.cleaned_data["username"],
-            password=self.cleaned_data["password"],
-            email=self.cleaned_data["email"],
-        )
-
-        # 2️⃣ Create student record
         student = super().save(commit=False)
-        student.user = user
-
-        if commit:
-            user.save()
-            student.save()
+        
+        # Only create user account if this is a new student (not editing)
+        if not self.instance.pk:
+            # Create login user
+            user = User.objects.create_user(
+                username=self.cleaned_data["username"],
+                password=self.cleaned_data["password"],
+                email=self.cleaned_data["email"],
+            )
+            student.user = user
+            
+            if commit:
+                user.save()
+                student.save()
+        else:
+            # Just update student info, don't touch user account
+            if commit:
+                student.save()
 
         return student
 # class EditProfileForm(forms.ModelForm):

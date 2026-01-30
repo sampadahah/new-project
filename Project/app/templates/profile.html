@@ -1,8 +1,4 @@
-{% if user.is_superuser %}
-  {% extends "admin/admin_base.html" %}
-{% else %}
-  {% extends "student_base.html" %}
-{% endif %}
+{% extends base_template %}
 
 {% block title %}My Profile{% endblock %}
 
@@ -11,7 +7,7 @@
   <div class="col-md-8">
     
     <!-- Profile Header -->
-    <div class="glass-card mb-4">
+    <div class="{% if user.is_superuser %}cardx{% else %}glass-card{% endif %} mb-4">
       <div class="row align-items-center">
         <div class="col-auto">
           <div class="rounded-circle d-flex align-items-center justify-content-center text-white"
@@ -36,7 +32,7 @@
     </div>
 
     <!-- Account Information -->
-    <div class="glass-card mb-4">
+    <div class="{% if user.is_superuser %}cardx{% else %}glass-card{% endif %} mb-4">
       <h5 class="fw-semibold mb-3">
         <i class="bi bi-person-badge me-2"></i>Account Information
       </h5>
@@ -71,14 +67,14 @@
           <small>Update your username or email address. Changes will take effect immediately.</small>
         </div>
 
-        <button type="submit" class="btn btn-primary px-4" style="border-radius: 12px;">
+        <button type="submit" class="btn {% if user.is_superuser %}btn-brand{% else %}btn-primary{% endif %} px-4" style="border-radius: 12px;">
           <i class="bi bi-check-circle me-2"></i>Save Changes
         </button>
       </form>
     </div>
 
     <!-- Change Password -->
-    <div class="glass-card">
+    <div class="{% if user.is_superuser %}cardx{% else %}glass-card{% endif %}">
       <h5 class="fw-semibold mb-3">
         <i class="bi bi-shield-lock me-2"></i>Change Password
       </h5>

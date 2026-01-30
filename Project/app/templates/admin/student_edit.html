@@ -27,78 +27,79 @@
       {% csrf_token %}
 
       <!-- STUDENT INFORMATION SECTION -->
-      <div class="cardx" style="border-left: 4px solid #f59e0b;">
-        <h5 class="fw-semibold mb-3">
-          <i class="bi bi-person-badge-fill text-warning me-2"></i>Student Information
-        </h5>
+      <!-- STUDENT INFORMATION SECTION -->
+  <div class="cardx" style="border-left: 4px solid #f59e0b;">
+    <h5 class="fw-semibold mb-3">
+      <i class="bi bi-person-badge-fill text-warning me-2"></i>Student Information
+    </h5>
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">
-              <i class="bi bi-hash me-1"></i>Student ID <span class="text-danger">*</span>
-            </label>
-            {{ form.student_id }}
-            {% for e in form.student_id.errors %}
-              <div class="text-danger small mt-1">{{ e }}</div>
-            {% endfor %}
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">
-              <i class="bi bi-person me-1"></i>Full Name <span class="text-danger">*</span>
-            </label>
-            {{ form.full_name }}
-            {% for e in form.full_name.errors %}
-              <div class="text-danger small mt-1">{{ e }}</div>
-            {% endfor %}
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">
-              <i class="bi bi-envelope me-1"></i>Email Address <span class="text-danger">*</span>
-            </label>
-            {{ form.email }}
-            {% for e in form.email.errors %}
-              <div class="text-danger small mt-1">{{ e }}</div>
-            {% endfor %}
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">
-              <i class="bi bi-mortarboard me-1"></i>Program <span class="text-danger">*</span>
-            </label>
-            {{ form.program }}
-            {% for e in form.program.errors %}
-              <div class="text-danger small mt-1">{{ e }}</div>
-            {% endfor %}
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">
-              <i class="bi bi-calendar3 me-1"></i>Batch <span class="text-danger">*</span>
-            </label>
-            {{ form.batch }}
-            {% for e in form.batch.errors %}
-              <div class="text-danger small mt-1">{{ e }}</div>
-            {% endfor %}
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">
-              <i class="bi bi-envelope me-1"></i> Year<span class="text-danger">*</span>
-            </label>
-            {{ form.year }}
-            {% for e in form.year.errors %}
-              <div class="text-danger small mt-1">{{ e }}</div>
-            {% endfor %}
-          </div>
-        </div>
-
-        <div class="alert alert-info d-flex align-items-start">
-          <i class="bi bi-info-circle me-2 mt-1"></i>
-          <small>Note: Student login credentials cannot be changed here. They must be changed from the student's profile page.</small>
-        </div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-hash me-1"></i>Student ID <span class="text-danger">*</span>
+        </label>
+        {{ form.student_id }}
+        {% for e in form.student_id.errors %}
+          <div class="text-danger small mt-1">{{ e }}</div>
+        {% endfor %}
       </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-person me-1"></i>Full Name <span class="text-danger">*</span>
+        </label>
+        {{ form.full_name }}
+        {% for e in form.full_name.errors %}
+          <div class="text-danger small mt-1">{{ e }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-12 mb-3">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-envelope me-1"></i>Email Address <span class="text-danger">*</span>
+        </label>
+        {{ form.email }}
+        {% for e in form.email.errors %}
+          <div class="text-danger small mt-1">{{ e }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-mortarboard me-1"></i>Program <span class="text-danger">*</span>
+        </label>
+        {{ form.program }}
+        {% for e in form.program.errors %}
+          <div class="text-danger small mt-1">{{ e }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-calendar3 me-1"></i>Batch <span class="text-danger">*</span>
+        </label>
+        {{ form.batch }}
+        {% for e in form.batch.errors %}
+          <div class="text-danger small mt-1">{{ e }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-12 mb-3">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-calendar-check me-1"></i>Year <span class="text-danger">*</span>
+        </label>
+        {{ form.year }}
+        {% for e in form.year.errors %}
+          <div class="text-danger small mt-1">{{ e }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="alert alert-info d-flex align-items-start">
+      <i class="bi bi-info-circle me-2 mt-1"></i>
+      <small>Note: Student login credentials cannot be changed here. They must be changed from the student's profile page.</small>
+    </div>
+  </div>
 
       <!-- ACTION BUTTONS -->
       <div class="d-flex gap-2">

@@ -93,7 +93,13 @@ def profile_view(request):
     else:
         form = ProfileForm(instance=user)
 
-    return render(request, "profile.html", {"form": form})
+    # Pass the base template to use
+    base_template = "admin/admin_base.html" if user.is_superuser else "student_base.html"
+    
+    return render(request, "profile.html", {
+        "form": form,
+        "base_template": base_template
+    })
 # ================= STUDENT VIEWS (Person 3) =================
 
 @login_required
